@@ -434,3 +434,180 @@
         <div class="or-row"><div class="or-line"></div><span class="or-text">and / or</span><div class="or-line"></div></div>
         <div class="field-group">
           <label class="field-label" for="salon-${idx}">Salon / business name</label>
+          <input class="field-input" type="text" id="salon-${idx}" placeholder="e.g. Luxe Salon" oninput="checkNext(${idx})">
+          <div class="val-msg" id="val-${idx}">Please fill in at least a provider name or salon.</div>
+        </div>
+        <div class="thin-rule"></div>
+        <div class="optional-toggle" onclick="toggleSection('ig-fields-${idx}','ig-arrow-${idx}')">
+          <span class="toggle-arrow" id="ig-arrow-${idx}">&#9654;</span>
+          <span class="toggle-label">Add Instagram</span>
+        </div>
+        <div class="optional-fields" id="ig-fields-${idx}">
+          <div class="field-group">
+            <label class="field-label" for="ig-${idx}">Instagram handle</label>
+            <input class="field-input" type="text" id="ig-${idx}" placeholder="@handle">
+          </div>
+        </div>
+        <div class="optional-toggle" onclick="toggleSection('note-fields-${idx}','note-arrow-${idx}')">
+          <span class="toggle-arrow" id="note-arrow-${idx}">&#9654;</span>
+          <span class="toggle-label">Add a note</span>
+        </div>
+        <div class="optional-fields" id="note-fields-${idx}">
+          <div class="field-group">
+            <label class="field-label" for="note-${idx}">Your note</label>
+            <textarea class="field-textarea" id="note-${idx}" placeholder="What makes them worth the rec?"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="rname-${idx}">Your name (optional)</label>
+            <input class="field-input" type="text" id="rname-${idx}" placeholder="First name or handle">
+          </div>
+        </div>
+        <div class="nav-row">
+          <button class="btn-back" onclick="goToSlide(${idx - 1})">Back</button>
+          <button class="btn-primary" id="next-provider-${idx}" disabled onclick="${isLast ? 'submitAll(' + idx + ')' : 'advanceSlide(' + idx + ')'}">${isLast ? 'Submit' : 'Continue'}</button>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function startProviderSlides() {
+    buildProviderSlides();
+    updateProgress(2, selectedServices.length + 2);
+    showStep('provider-slide-0');
+  }
+
+  function goToSlide(idx) {
+    const total = selectedServices.length + 2;
+    if (idx < 0) { updateProgress(1, total); showStep('step-services'); }
+    else { updateProgress(idx + 2, total); showStep('provider-slide-' + idx); }
+  }
+
+  function advanceSlide(idx) {
+    if (!document.getElementById('pname-' + idx).value.trim() && !document.getElementById('salon-' + idx).value.trim()) {
+      document.getElementById('val-' + idx).classList.add('show'); return;
+    }
+    updateProgress(idx + 3, selectedServices.length + 2);
+    showStep('provider-slide-' + (idx + 1));
+  }
+
+  function checkNext(idx) {
+    const ok = document.getElementById('pname-' + idx).value.trim() || document.getElementById('salon-' + idx).value.trim();
+    document.getElementById('next-provider-' + idx).disabled = !ok;
+    if (ok) document.getElementById('val-' + idx).classList.remove('show');
+  }
+
+  function toggleSection(fId, aId) {
+    const open = document.getElementById(fId).classList.toggle('open');
+    document.getElementById(aId).classList.toggle('open', open);
+  }
+
+  async function submitAll(lastIdx) {
+    if (!document.getElementById('pname-' + lastIdx).value.trim() && !document.getElementById('salon-' + lastIdx).value.trim()) {
+      document.getElementById('val-' + lastIdx).classList.add('show'); return;
+    }
+    const btn = document.getElementById('next-provider-' + lastIdx);
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    const rows = selectedServices.map((service, idx) => ({
+      service,
+      provider: document.getElementById('pname-' + idx).value.trim() || null,
+      salon: document.getElementById('salon-' + idx).value.trim() || null,
+      ig: document.getElementById('ig-' + idx).value.trim() || null,
+      note: document.getElementById('note-' + idx).value.trim() || null,
+      recommender: document.getElementById('rname-' + idx).value.trim() || null,
+    }));
+
+    const { error } = await db.from('recommendations').insert(rows);
+    if (error) {
+      alert('Something went wrong saving your rec. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Submit';
+      return;
+    }
+
+    updateProgress(selectedServices.length + 2, selectedServices.length + 2);
+    showStep('step-success');
+  }
+
+  function resetSurvey() {
+    selectedServices = [];
+    document.querySelectorAll('#service-chips .chip').forEach(x => x.classList.remove('selected'));
+    document.getElementById('next-services').disabled = true;
+    updateProgress(0, 2);
+    showStep('step-services');
+  }
+
+  const searchInput = document.getElementById('search-q');
+  searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+  function fillSearch(q) {
+    searchInput.value = q;
+    doSearch();
+    switchTab('search');
+  }
+
+  async function doSearch() {
+    const query = searchInput.value.trim();
+    if (!query) return;
+    const area = document.getElementById('search-results');
+    area.innerHTML = `<div class="status-msg">Searching <span class="loading-dots"><span></span><span></span><span></span></span></div>`;
+
+    const { data: recs, error } = await db.from('recommendations').select('*').order('created_at', { ascending: false });
+
+    if (error || !recs || !recs.length) {
+      area.innerHTML = `<div class="empty-state"><div class="empty-glyph">✦</div><p class="empty-text">The directory is empty — share the survey to start collecting recs.</p></div>`;
+      return;
+    }
+
+    const prompt = `You are a helpful assistant for a peer beauty provider directory called "The Rec".
+
+A user searched: "${query}"
+
+Here are all the recommendations in the directory:
+${JSON.stringify(recs)}
+
+Your job:
+1. Write a short, warm 1-2 sentence synthesis answering the user's query — mention specific provider or salon names where relevant. Be direct. If location is mentioned in a note or salon name, use it. If nothing matches well, say so honestly.
+2. Return the IDs of the most relevant recommendations, ordered by relevance. Max 5.
+
+Respond ONLY with valid JSON in this exact format, no other text:
+{"answer":"...","ids":["uuid1","uuid2"]}`;
+
+    try {
+      const res = await fetch('https://zlwqyuvfrfdfwdjcspkn.supabase.co/functions/v1/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_PdhHfCEvOCmAYM1rfSdWRw_6z6pDN2t' },
+        body: JSON.stringify({ prompt })
+      });
+      const data = await res.json();
+      const text = data.content.find(b => b.type === 'text')?.text || '';
+      const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+      let html = '';
+      if (parsed.answer) {
+        html += `<div class="ai-answer"><p class="ai-answer-text">${parsed.answer}</p></div>`;
+      }
+
+      const matched = (parsed.ids || []).map(id => recs.find(r => r.id === id)).filter(Boolean);
+      if (matched.length) {
+        html += `<p class="results-label">${matched.length} recommendation${matched.length !== 1 ? 's' : ''}</p>`;
+        html += matched.map(r => `
+          <div class="result-card">
+            <div class="result-service">${r.service || ''}</div>
+            <div class="result-provider">${[r.provider, r.salon].filter(Boolean).join(' · ')}</div>
+            ${r.ig ? `<div class="result-ig">${r.ig.startsWith('@') ? r.ig : '@'+r.ig}</div>` : ''}
+            ${r.note ? `<div class="result-note">"${r.note}"${r.recommender ? ' — '+r.recommender : ''}</div>` : ''}
+          </div>`).join('');
+      } else {
+        html += `<div class="empty-state"><div class="empty-glyph">✦</div><p class="empty-text">No matching recommendations found.</p></div>`;
+      }
+      area.innerHTML = html;
+    } catch(err) {
+      area.innerHTML = `<div class="status-msg">Something went wrong — please try again.</div>`;
+    }
+  }
+</script>
+</body>
+</html>

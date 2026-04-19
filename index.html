@@ -380,7 +380,7 @@
 
 <script>
   const SUPABASE_URL = 'https://zlwqyuvfrfdfwdjcspkn.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_PdhHfCEvOCmAYM1rfSdWRw_6z6pDN2t';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpsd3F5dXZmcmZkZndkamNzcGtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MTk1MjcsImV4cCI6MjA5MjE5NTUyN30.O4z4nf-Iu1-VyZwIEYR_JlsAHTUgxjxG59mWuVuPKCA';
   const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   let selectedServices = [];
@@ -578,7 +578,7 @@ Respond ONLY with valid JSON in this exact format, no other text:
     try {
       const res = await fetch('https://zlwqyuvfrfdfwdjcspkn.supabase.co/functions/v1/search', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sb_publishable_PdhHfCEvOCmAYM1rfSdWRw_6z6pDN2t' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpsd3F5dXZmcmZkZndkamNzcGtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MTk1MjcsImV4cCI6MjA5MjE5NTUyN30.O4z4nf-Iu1-VyZwIEYR_JlsAHTUgxjxG59mWuVuPKCA' },
         body: JSON.stringify({ prompt })
       });
       const data = await res.json();

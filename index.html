@@ -32,7 +32,6 @@
       padding: 3rem 1.5rem 5rem;
     }
 
-    /* Masthead */
     .masthead {
       text-align: center;
       margin-bottom: 2.5rem;
@@ -55,10 +54,8 @@
       color: var(--ink-soft);
     }
 
-    /* Nav tabs */
     .nav-tabs {
       display: flex;
-      gap: 0;
       margin-bottom: 2.5rem;
       border-bottom: 1px solid var(--ink);
     }
@@ -79,28 +76,14 @@
       transition: color 0.15s;
     }
     .nav-tab:hover { color: var(--ink); }
-    .nav-tab.active {
-      color: var(--ink);
-      border-bottom-color: var(--ink);
-    }
+    .nav-tab.active { color: var(--ink); border-bottom-color: var(--ink); }
 
-    /* Panels */
     .panel { display: none; }
     .panel.active { display: block; }
 
-    /* Progress bar */
-    .progress-bar {
-      height: 2px;
-      background: var(--cream-dark);
-      margin-bottom: 2rem;
-    }
-    .progress-fill {
-      height: 100%;
-      background: var(--crimson);
-      transition: width 0.3s ease;
-    }
+    .progress-bar { height: 2px; background: var(--cream-dark); margin-bottom: 2rem; }
+    .progress-fill { height: 100%; background: var(--crimson); transition: width 0.3s ease; }
 
-    /* Survey steps */
     .step { display: none; }
     .step.active { display: block; }
     .step-eyebrow {
@@ -111,13 +94,7 @@
       color: var(--ink-soft);
       margin-bottom: 0.5rem;
     }
-    .step-title {
-      font-size: 28px;
-      font-weight: 400;
-      color: var(--ink);
-      margin-bottom: 0.5rem;
-      line-height: 1.2;
-    }
+    .step-title { font-size: 28px; font-weight: 400; color: var(--ink); margin-bottom: 0.5rem; line-height: 1.2; }
     .step-sub {
       font-family: 'Helvetica Neue', Arial, sans-serif;
       font-size: 14px;
@@ -126,7 +103,6 @@
       line-height: 1.6;
     }
 
-    /* Chips */
     .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 1.75rem; }
     .chip {
       font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -143,7 +119,6 @@
     .chip:hover { border-color: var(--crimson); color: var(--crimson); }
     .chip.selected { background: var(--ink); border-color: var(--ink); color: var(--cream); }
 
-    /* Service eyebrow on provider slides */
     .service-eyebrow {
       font-family: 'Helvetica Neue', Arial, sans-serif;
       display: inline-block;
@@ -156,7 +131,6 @@
       margin-bottom: 1rem;
     }
 
-    /* Fields */
     .field-group { margin-bottom: 1.25rem; }
     .field-label {
       font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -209,7 +183,6 @@
 
     .thin-rule { height: 0.5px; background: var(--ink-soft); opacity: 0.2; margin: 1.25rem 0; }
 
-    /* Optional toggles */
     .optional-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 0.75rem; }
     .toggle-label {
       font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -223,7 +196,6 @@
     .optional-fields { display: none; }
     .optional-fields.open { display: block; }
 
-    /* Validation */
     .val-msg {
       font-family: 'Helvetica Neue', Arial, sans-serif;
       font-size: 11px;
@@ -234,7 +206,6 @@
     }
     .val-msg.show { display: block; }
 
-    /* Nav buttons */
     .nav-row { display: flex; gap: 10px; margin-top: 2rem; }
     .btn-back {
       flex: 0 0 auto;
@@ -266,11 +237,9 @@
     .btn-primary:hover { opacity: 0.82; }
     .btn-primary:disabled { opacity: 0.3; cursor: default; }
 
-    /* Success */
     .success-mark { font-size: 36px; color: var(--crimson); margin-bottom: 1rem; line-height: 1; }
 
-    /* Search */
-    .search-row { display: flex; gap: 0; margin-bottom: 0.75rem; }
+    .search-row { display: flex; margin-bottom: 0.75rem; }
     .search-input {
       flex: 1;
       border: 1px solid var(--ink);
@@ -297,28 +266,13 @@
       transition: opacity 0.15s;
     }
     .search-btn:hover { opacity: 0.82; }
-    .hint {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      font-size: 12px;
-      color: var(--ink-soft);
-      margin-bottom: 2rem;
-    }
-    .hint-link {
-      color: var(--crimson);
-      border-bottom: 0.5px solid var(--crimson);
-      cursor: pointer;
-    }
+    .hint { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: var(--ink-soft); margin-bottom: 2rem; }
+    .hint-link { color: var(--crimson); border-bottom: 0.5px solid var(--crimson); cursor: pointer; }
     .hint-link:hover { opacity: 0.7; }
 
-    /* AI answer */
-    .ai-answer {
-      border-left: 2px solid var(--crimson);
-      padding: 0.75rem 1rem;
-      margin-bottom: 1.75rem;
-    }
+    .ai-answer { border-left: 2px solid var(--crimson); padding: 0.75rem 1rem; margin-bottom: 1.75rem; }
     .ai-answer-text { font-size: 16px; color: var(--ink); line-height: 1.6; }
 
-    /* Result cards */
     .results-label {
       font-family: 'Helvetica Neue', Arial, sans-serif;
       font-size: 10px;
@@ -338,7 +292,6 @@
       margin-bottom: 4px;
     }
     .result-provider { font-size: 18px; color: var(--ink); margin-bottom: 2px; }
-    .result-meta { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; color: var(--ink-mid); }
     .result-ig { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; color: var(--crimson-light); }
     .result-note { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; color: var(--ink-soft); margin-top: 5px; font-style: italic; }
 
@@ -368,7 +321,6 @@
     <button class="nav-tab" onclick="switchTab('search')">Search the directory</button>
   </div>
 
-  <!-- ── SURVEY PANEL ── -->
   <div class="panel active" id="panel-survey">
     <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
 
@@ -410,7 +362,6 @@
     </div>
   </div>
 
-  <!-- ── SEARCH PANEL ── -->
   <div class="panel" id="panel-search">
     <div class="search-row">
       <input class="search-input" type="text" id="search-q" placeholder="e.g. brows in Brooklyn, best colorist NYC" />
@@ -483,180 +434,3 @@
         <div class="or-row"><div class="or-line"></div><span class="or-text">and / or</span><div class="or-line"></div></div>
         <div class="field-group">
           <label class="field-label" for="salon-${idx}">Salon / business name</label>
-          <input class="field-input" type="text" id="salon-${idx}" placeholder="e.g. Luxe Salon" oninput="checkNext(${idx})">
-          <div class="val-msg" id="val-${idx}">Please fill in at least a provider name or salon.</div>
-        </div>
-        <div class="thin-rule"></div>
-        <div class="optional-toggle" onclick="toggleSection('ig-fields-${idx}','ig-arrow-${idx}')">
-          <span class="toggle-arrow" id="ig-arrow-${idx}">&#9654;</span>
-          <span class="toggle-label">Add Instagram</span>
-        </div>
-        <div class="optional-fields" id="ig-fields-${idx}">
-          <div class="field-group">
-            <label class="field-label" for="ig-${idx}">Instagram handle</label>
-            <input class="field-input" type="text" id="ig-${idx}" placeholder="@handle">
-          </div>
-        </div>
-        <div class="optional-toggle" onclick="toggleSection('note-fields-${idx}','note-arrow-${idx}')">
-          <span class="toggle-arrow" id="note-arrow-${idx}">&#9654;</span>
-          <span class="toggle-label">Add a note</span>
-        </div>
-        <div class="optional-fields" id="note-fields-${idx}">
-          <div class="field-group">
-            <label class="field-label" for="note-${idx}">Your note</label>
-            <textarea class="field-textarea" id="note-${idx}" placeholder="What makes them worth the rec?"></textarea>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="rname-${idx}">Your name (optional)</label>
-            <input class="field-input" type="text" id="rname-${idx}" placeholder="First name or handle">
-          </div>
-        </div>
-        <div class="nav-row">
-          <button class="btn-back" onclick="goToSlide(${idx - 1})">Back</button>
-          <button class="btn-primary" id="next-provider-${idx}" disabled onclick="${isLast ? 'submitAll(' + idx + ')' : 'advanceSlide(' + idx + ')'}">${isLast ? 'Submit' : 'Continue'}</button>
-        </div>
-      `;
-      container.appendChild(div);
-    });
-  }
-
-  function startProviderSlides() {
-    buildProviderSlides();
-    updateProgress(2, selectedServices.length + 2);
-    showStep('provider-slide-0');
-  }
-
-  function goToSlide(idx) {
-    const total = selectedServices.length + 2;
-    if (idx < 0) { updateProgress(1, total); showStep('step-services'); }
-    else { updateProgress(idx + 2, total); showStep('provider-slide-' + idx); }
-  }
-
-  function advanceSlide(idx) {
-    if (!document.getElementById('pname-' + idx).value.trim() && !document.getElementById('salon-' + idx).value.trim()) {
-      document.getElementById('val-' + idx).classList.add('show'); return;
-    }
-    updateProgress(idx + 3, selectedServices.length + 2);
-    showStep('provider-slide-' + (idx + 1));
-  }
-
-  function checkNext(idx) {
-    const ok = document.getElementById('pname-' + idx).value.trim() || document.getElementById('salon-' + idx).value.trim();
-    document.getElementById('next-provider-' + idx).disabled = !ok;
-    if (ok) document.getElementById('val-' + idx).classList.remove('show');
-  }
-
-  function toggleSection(fId, aId) {
-    const open = document.getElementById(fId).classList.toggle('open');
-    document.getElementById(aId).classList.toggle('open', open);
-  }
-
-  async function submitAll(lastIdx) {
-    if (!document.getElementById('pname-' + lastIdx).value.trim() && !document.getElementById('salon-' + lastIdx).value.trim()) {
-      document.getElementById('val-' + lastIdx).classList.add('show'); return;
-    }
-    const btn = document.getElementById('next-provider-' + lastIdx);
-    btn.disabled = true;
-    btn.textContent = 'Saving...';
-
-    const rows = selectedServices.map((service, idx) => ({
-      service,
-      provider: document.getElementById('pname-' + idx).value.trim() || null,
-      salon: document.getElementById('salon-' + idx).value.trim() || null,
-      ig: document.getElementById('ig-' + idx).value.trim() || null,
-      note: document.getElementById('note-' + idx).value.trim() || null,
-      recommender: document.getElementById('rname-' + idx).value.trim() || null,
-    }));
-
-    const { error } = await db.from('recommendations').insert(rows);
-    if (error) {
-      alert('Something went wrong saving your rec. Please try again.');
-      btn.disabled = false;
-      btn.textContent = 'Submit';
-      return;
-    }
-
-    updateProgress(selectedServices.length + 2, selectedServices.length + 2);
-    showStep('step-success');
-  }
-
-  function resetSurvey() {
-    selectedServices = [];
-    document.querySelectorAll('#service-chips .chip').forEach(x => x.classList.remove('selected'));
-    document.getElementById('next-services').disabled = true;
-    updateProgress(0, 2);
-    showStep('step-services');
-  }
-
-  const searchInput = document.getElementById('search-q');
-  searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
-
-  function fillSearch(q) {
-    searchInput.value = q;
-    doSearch();
-    switchTab('search');
-  }
-
-  async function doSearch() {
-    const query = searchInput.value.trim();
-    if (!query) return;
-    const area = document.getElementById('search-results');
-    area.innerHTML = `<div class="status-msg">Searching <span class="loading-dots"><span></span><span></span><span></span></span></div>`;
-
-    const { data: recs, error } = await db.from('recommendations').select('*').order('created_at', { ascending: false });
-
-    if (error || !recs || !recs.length) {
-      area.innerHTML = `<div class="empty-state"><div class="empty-glyph">✦</div><p class="empty-text">The directory is empty — share the survey to start collecting recs.</p></div>`;
-      return;
-    }
-
-    const prompt = `You are a helpful assistant for a peer beauty provider directory called "The Rec".
-
-A user searched: "${query}"
-
-Here are all the recommendations in the directory:
-${JSON.stringify(recs)}
-
-Your job:
-1. Write a short, warm 1-2 sentence synthesis answering the user's query — mention specific provider or salon names where relevant. Be direct. If location is mentioned in a note or salon name, use it. If nothing matches well, say so honestly.
-2. Return the IDs of the most relevant recommendations, ordered by relevance. Max 5.
-
-Respond ONLY with valid JSON in this exact format, no other text:
-{"answer":"...","ids":["uuid1","uuid2"]}`;
-
-    try {
-      const res = await fetch('/.netlify/functions/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
-      });
-      const data = await res.json();
-      const text = data.content.find(b => b.type === 'text')?.text || '';
-      const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
-
-      let html = '';
-      if (parsed.answer) {
-        html += `<div class="ai-answer"><p class="ai-answer-text">${parsed.answer}</p></div>`;
-      }
-
-      const matched = (parsed.ids || []).map(id => recs.find(r => r.id === id)).filter(Boolean);
-      if (matched.length) {
-        html += `<p class="results-label">${matched.length} recommendation${matched.length !== 1 ? 's' : ''}</p>`;
-        html += matched.map(r => `
-          <div class="result-card">
-            <div class="result-service">${r.service || ''}</div>
-            <div class="result-provider">${[r.provider, r.salon].filter(Boolean).join(' · ')}</div>
-            ${r.ig ? `<div class="result-ig">${r.ig.startsWith('@') ? r.ig : '@'+r.ig}</div>` : ''}
-            ${r.note ? `<div class="result-note">"${r.note}"${r.recommender ? ' — '+r.recommender : ''}</div>` : ''}
-          </div>`).join('');
-      } else {
-        html += `<div class="empty-state"><div class="empty-glyph">✦</div><p class="empty-text">No matching recommendations found.</p></div>`;
-      }
-      area.innerHTML = html;
-    } catch(err) {
-      area.innerHTML = `<div class="status-msg">Something went wrong — please try again.</div>`;
-    }
-  }
-</script>
-</body>
-</html>

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Rec</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #2C1A0E;
+      --ink-mid: #5C3D22;
+      --ink-soft: #8C6A4A;
+      --cream: #F5EFE0;
+      --cream-dark: #EAE0CC;
+      --crimson: #8B2020;
+      --crimson-light: #C84040;
+      --bg: #FAF7F2;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Georgia, 'Times New Roman', serif;
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+    }
+
+    /* Masthead */
+    .masthead {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--ink);
+    }
+    .masthead-title {
+      font-size: 56px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.01em;
+    }
+    .masthead-sub {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    /* Nav tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--ink);
+    }
+    .nav-tab {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      padding: 0.6rem 1.25rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      transition: color 0.15s;
+    }
+    .nav-tab:hover { color: var(--ink); }
+    .nav-tab.active {
+      color: var(--ink);
+      border-bottom-color: var(--ink);
+    }
+
+    /* Panels */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* Progress bar */
+    .progress-bar {
+      height: 2px;
+      background: var(--cream-dark);
+      margin-bottom: 2rem;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--crimson);
+      transition: width 0.3s ease;
+    }
+
+    /* Survey steps */
+    .step { display: none; }
+    .step.active { display: block; }
+    .step-eyebrow {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 0.5rem;
+    }
+    .step-title {
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+    }
+    .step-sub {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      color: var(--ink-soft);
+      margin-bottom: 1.75rem;
+      line-height: 1.6;
+    }
+
+    /* Chips */
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 1.75rem; }
+    .chip {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      padding: 7px 15px;
+      border: 0.5px solid var(--ink-soft);
+      font-size: 13px;
+      color: var(--ink-mid);
+      cursor: pointer;
+      background: transparent;
+      transition: all 0.15s;
+      user-select: none;
+      letter-spacing: 0.02em;
+    }
+    .chip:hover { border-color: var(--crimson); color: var(--crimson); }
+    .chip.selected { background: var(--ink); border-color: var(--ink); color: var(--cream); }
+
+    /* Service eyebrow on provider slides */
+    .service-eyebrow {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      border-bottom: 1px solid var(--crimson);
+      padding-bottom: 2px;
+      margin-bottom: 1rem;
+    }
+
+    /* Fields */
+    .field-group { margin-bottom: 1.25rem; }
+    .field-label {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .field-input {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid var(--ink-soft);
+      padding: 8px 0;
+      font-size: 15px;
+      font-family: Georgia, serif;
+      color: var(--ink);
+      background: transparent;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field-input:focus { border-bottom-color: var(--crimson); }
+    .field-input::placeholder { color: var(--ink-soft); opacity: 0.5; }
+    .field-textarea {
+      width: 100%;
+      border: 0.5px solid var(--ink-soft);
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      color: var(--ink);
+      background: transparent;
+      outline: none;
+      resize: vertical;
+      min-height: 80px;
+      transition: border-color 0.15s;
+    }
+    .field-textarea:focus { border-color: var(--crimson); }
+    .field-textarea::placeholder { color: var(--ink-soft); opacity: 0.5; }
+
+    .or-row { display: flex; align-items: center; gap: 12px; margin: -0.1rem 0 1.25rem; }
+    .or-line { flex: 1; height: 0.5px; background: var(--ink-soft); opacity: 0.3; }
+    .or-text {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+
+    .thin-rule { height: 0.5px; background: var(--ink-soft); opacity: 0.2; margin: 1.25rem 0; }
+
+    /* Optional toggles */
+    .optional-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 0.75rem; }
+    .toggle-label {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--crimson);
+    }
+    .toggle-arrow { font-size: 10px; color: var(--crimson); transition: transform 0.2s; display: inline-block; }
+    .toggle-arrow.open { transform: rotate(90deg); }
+    .optional-fields { display: none; }
+    .optional-fields.open { display: block; }
+
+    /* Validation */
+    .val-msg {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11px;
+      color: var(--crimson);
+      margin-top: 5px;
+      display: none;
+      letter-spacing: 0.04em;
+    }
+    .val-msg.show { display: block; }
+
+    /* Nav buttons */
+    .nav-row { display: flex; gap: 10px; margin-top: 2rem; }
+    .btn-back {
+      flex: 0 0 auto;
+      padding: 10px 22px;
+      background: transparent;
+      border: 0.5px solid var(--ink-soft);
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-back:hover { border-color: var(--ink); color: var(--ink); }
+    .btn-primary {
+      flex: 1;
+      padding: 11px 22px;
+      background: var(--ink);
+      border: none;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cream);
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.82; }
+    .btn-primary:disabled { opacity: 0.3; cursor: default; }
+
+    /* Success */
+    .success-mark { font-size: 36px; color: var(--crimson); margin-bottom: 1rem; line-height: 1; }
+
+    /* Search */
+    .search-row { display: flex; gap: 0; margin-bottom: 0.75rem; }
+    .search-input {
+      flex: 1;
+      border: 1px solid var(--ink);
+      border-right: none;
+      padding: 11px 14px;
+      font-size: 15px;
+      font-family: Georgia, serif;
+      color: var(--ink);
+      background: transparent;
+      outline: none;
+    }
+    .search-input::placeholder { color: var(--ink-soft); opacity: 0.6; }
+    .search-btn {
+      padding: 11px 20px;
+      background: var(--ink);
+      border: 1px solid var(--ink);
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cream);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+    }
+    .search-btn:hover { opacity: 0.82; }
+    .hint {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-bottom: 2rem;
+    }
+    .hint-link {
+      color: var(--crimson);
+      border-bottom: 0.5px solid var(--crimson);
+      cursor: pointer;
+    }
+    .hint-link:hover { opacity: 0.7; }
+
+    /* AI answer */
+    .ai-answer {
+      border-left: 2px solid var(--crimson);
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .ai-answer-text { font-size: 16px; color: var(--ink); line-height: 1.6; }
+
+    /* Result cards */
+    .results-label {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 1rem;
+    }
+    .result-card { border-bottom: 0.5px solid var(--ink-soft); padding: 1rem 0; }
+    .result-card:last-child { border-bottom: none; }
+    .result-service {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      margin-bottom: 4px;
+    }
+    .result-provider { font-size: 18px; color: var(--ink); margin-bottom: 2px; }
+    .result-meta { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; color: var(--ink-mid); }
+    .result-ig { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; color: var(--crimson-light); }
+    .result-note { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; color: var(--ink-soft); margin-top: 5px; font-style: italic; }
+
+    .empty-state { text-align: center; padding: 3rem 0; }
+    .empty-glyph { font-size: 32px; color: var(--ink-soft); opacity: 0.4; margin-bottom: 0.75rem; }
+    .empty-text { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; color: var(--ink-soft); }
+
+    .status-msg { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; color: var(--ink-soft); margin-bottom: 1rem; }
+
+    .loading-dots { display: inline-flex; gap: 4px; vertical-align: middle; }
+    .loading-dots span { width: 5px; height: 5px; background: var(--crimson); border-radius: 50%; animation: pulse 1.2s ease-in-out infinite; }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="masthead">
+    <div class="masthead-title">The Rec</div>
+    <div class="masthead-sub">A beauty directory, by the people</div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('survey')">Submit a rec</button>
+    <button class="nav-tab" onclick="switchTab('search')">Search the directory</button>
+  </div>
+
+  <!-- ── SURVEY PANEL ── -->
+  <div class="panel active" id="panel-survey">
+    <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+
+    <div class="step active" id="step-services">
+      <p class="step-eyebrow">Step 1</p>
+      <h1 class="step-title">What services did they provide?</h1>
+      <p class="step-sub">Select all that apply — you'll tell us about each provider separately.</p>
+      <div class="chips" id="service-chips">
+        <div class="chip" data-val="Hair cut & style">Hair cut & style</div>
+        <div class="chip" data-val="Hair color">Hair color</div>
+        <div class="chip" data-val="Blowout / styling">Blowout / styling</div>
+        <div class="chip" data-val="Extensions">Extensions</div>
+        <div class="chip" data-val="Nails / manicure">Nails / manicure</div>
+        <div class="chip" data-val="Pedicure">Pedicure</div>
+        <div class="chip" data-val="Brows">Brows</div>
+        <div class="chip" data-val="Lashes">Lashes</div>
+        <div class="chip" data-val="Waxing">Waxing</div>
+        <div class="chip" data-val="Laser / IPL">Laser / IPL</div>
+        <div class="chip" data-val="Facial / skincare">Facial / skincare</div>
+        <div class="chip" data-val="Massage">Massage</div>
+        <div class="chip" data-val="Makeup">Makeup</div>
+        <div class="chip" data-val="Spray tan">Spray tan</div>
+        <div class="chip" data-val="Other">Other</div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-primary" id="next-services" disabled onclick="startProviderSlides()">Continue</button>
+      </div>
+    </div>
+
+    <div id="provider-slides"></div>
+
+    <div class="step" id="step-success">
+      <div class="success-mark">✦</div>
+      <h1 class="step-title">Thank you for the rec.</h1>
+      <p class="step-sub">Your recommendation has been saved to the directory.</p>
+      <div class="nav-row">
+        <button class="btn-primary" onclick="resetSurvey()">Add another recommendation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SEARCH PANEL ── -->
+  <div class="panel" id="panel-search">
+    <div class="search-row">
+      <input class="search-input" type="text" id="search-q" placeholder="e.g. brows in Brooklyn, best colorist NYC" />
+      <button class="search-btn" onclick="doSearch()">Search</button>
+    </div>
+    <p class="hint">
+      Try:
+      <span class="hint-link" onclick="fillSearch('hair color in LA')">hair color in LA</span> ·
+      <span class="hint-link" onclick="fillSearch('best nail tech')">best nail tech</span> ·
+      <span class="hint-link" onclick="fillSearch('facial skincare')">facial skincare</span>
+    </p>
+    <div id="search-results"></div>
+  </div>
+
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://zlwqyuvfrfdfwdjcspkn.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_PdhHfCEvOCmAYM1rfSdWRw_6z6pDN2t';
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let selectedServices = [];
+
+  function switchTab(tab) {
+    document.querySelectorAll('.nav-tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'survey') || (i === 1 && tab === 'search'));
+    });
+    document.getElementById('panel-survey').classList.toggle('active', tab === 'survey');
+    document.getElementById('panel-search').classList.toggle('active', tab === 'search');
+  }
+
+  document.querySelectorAll('#service-chips .chip').forEach(c => {
+    c.addEventListener('click', () => {
+      c.classList.toggle('selected');
+      const val = c.dataset.val;
+      selectedServices = c.classList.contains('selected')
+        ? [...selectedServices, val]
+        : selectedServices.filter(s => s !== val);
+      document.getElementById('next-services').disabled = selectedServices.length === 0;
+    });
+  });
+
+  function updateProgress(current, total) {
+    document.getElementById('prog').style.width = Math.round((current / total) * 100) + '%';
+  }
+
+  function showStep(id) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function buildProviderSlides() {
+    const container = document.getElementById('provider-slides');
+    container.innerHTML = '';
+    const total = selectedServices.length + 2;
+    selectedServices.forEach((service, idx) => {
+      const isLast = idx === selectedServices.length - 1;
+      const div = document.createElement('div');
+      div.className = 'step';
+      div.id = 'provider-slide-' + idx;
+      div.innerHTML = `
+        <p class="step-eyebrow">Step ${idx + 2} of ${total - 1}</p>
+        <span class="service-eyebrow">${service}</span>
+        <h1 class="step-title">Tell us about your provider</h1>
+        <p class="step-sub">At least a provider name or salon is required.</p>
+        <div class="field-group">
+          <label class="field-label" for="pname-${idx}">Provider name</label>
+          <input class="field-input" type="text" id="pname-${idx}" placeholder="e.g. Maria Johnson" oninput="checkNext(${idx})">
+        </div>
+        <div class="or-row"><div class="or-line"></div><span class="or-text">and / or</span><div class="or-line"></div></div>
+        <div class="field-group">
+          <label class="field-label" for="salon-${idx}">Salon / business name</label>
+          <input class="field-input" type="text" id="salon-${idx}" placeholder="e.g. Luxe Salon" oninput="checkNext(${idx})">
+          <div class="val-msg" id="val-${idx}">Please fill in at least a provider name or salon.</div>
+        </div>
+        <div class="thin-rule"></div>
+        <div class="optional-toggle" onclick="toggleSection('ig-fields-${idx}','ig-arrow-${idx}')">
+          <span class="toggle-arrow" id="ig-arrow-${idx}">&#9654;</span>
+          <span class="toggle-label">Add Instagram</span>
+        </div>
+        <div class="optional-fields" id="ig-fields-${idx}">
+          <div class="field-group">
+            <label class="field-label" for="ig-${idx}">Instagram handle</label>
+            <input class="field-input" type="text" id="ig-${idx}" placeholder="@handle">
+          </div>
+        </div>
+        <div class="optional-toggle" onclick="toggleSection('note-fields-${idx}','note-arrow-${idx}')">
+          <span class="toggle-arrow" id="note-arrow-${idx}">&#9654;</span>
+          <span class="toggle-label">Add a note</span>
+        </div>
+        <div class="optional-fields" id="note-fields-${idx}">
+          <div class="field-group">
+            <label class="field-label" for="note-${idx}">Your note</label>
+            <textarea class="field-textarea" id="note-${idx}" placeholder="What makes them worth the rec?"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="rname-${idx}">Your name (optional)</label>
+            <input class="field-input" type="text" id="rname-${idx}" placeholder="First name or handle">
+          </div>
+        </div>
+        <div class="nav-row">
+          <button class="btn-back" onclick="goToSlide(${idx - 1})">Back</button>
+          <button class="btn-primary" id="next-provider-${idx}" disabled onclick="${isLast ? 'submitAll(' + idx + ')' : 'advanceSlide(' + idx + ')'}">${isLast ? 'Submit' : 'Continue'}</button>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function startProviderSlides() {
+    buildProviderSlides();
+    updateProgress(2, selectedServices.length + 2);
+    showStep('provider-slide-0');
+  }
+
+  function goToSlide(idx) {
+    const total = selectedServices.length + 2;
+    if (idx < 0) { updateProgress(1, total); showStep('step-services'); }
+    else { updateProgress(idx + 2, total); showStep('provider-slide-' + idx); }
+  }
+
+  function advanceSlide(idx) {
+    if (!document.getElementById('pname-' + idx).value.trim() && !document.getElementById('salon-' + idx).value.trim()) {
+      document.getElementById('val-' + idx).classList.add('show'); return;
+    }
+    updateProgress(idx + 3, selectedServices.length + 2);
+    showStep('provider-slide-' + (idx + 1));
+  }
+
+  function checkNext(idx) {
+    const ok = document.getElementById('pname-' + idx).value.trim() || document.getElementById('salon-' + idx).value.trim();
+    document.getElementById('next-provider-' + idx).disabled = !ok;
+    if (ok) document.getElementById('val-' + idx).classList.remove('show');
+  }
+
+  function toggleSection(fId, aId) {
+    const open = document.getElementById(fId).classList.toggle('open');
+    document.getElementById(aId).classList.toggle('open', open);
+  }
+
+  async function submitAll(lastIdx) {
+    if (!document.getElementById('pname-' + lastIdx).value.trim() && !document.getElementById('salon-' + lastIdx).value.trim()) {
+      document.getElementById('val-' + lastIdx).classList.add('show'); return;
+    }
+    const btn = document.getElementById('next-provider-' + lastIdx);
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    const rows = selectedServices.map((service, idx) => ({
+      service,
+      provider: document.getElementById('pname-' + idx).value.trim() || null,
+      salon: document.getElementById('salon-' + idx).value.trim() || null,
+      ig: document.getElementById('ig-' + idx).value.trim() || null,
+      note: document.getElementById('note-' + idx).value.trim() || null,
+      recommender: document.getElementById('rname-' + idx).value.trim() || null,
+    }));
+
+    const { error } = await db.from('recommendations').insert(rows);
+    if (error) {
+      alert('Something went wrong saving your rec. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Submit';
+      return;
+    }
+
+    updateProgress(selectedServices.length + 2, selectedServices.length + 2);
+    showStep('step-success');
+  }
+
+  function resetSurvey() {
+    selectedServices = [];
+    document.querySelectorAll('#service-chips .chip').forEach(x => x.classList.remove('selected'));
+    document.getElementById('next-services').disabled = true;
+    updateProgress(0, 2);
+    showStep('step-services');
+  }
+
+  const searchInput = document.getElementById('search-q');
+  searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+  function fillSearch(q) {
+    searchInput.value = q;
+    doSearch();
+    switchTab('search');
+  }
+
+  async function doSearch() {
+    const query = searchInput.value.trim();
+    if (!query) return;
+    const area = document.getElementById('search-results');
+    area.innerHTML = `<div class="status-msg">Searching <span class="loading-dots"><span></span><span></span><span></span></span></div>`;
+
+    const { data: recs, error } = await db.from('recommendations').select('*').order('created_at', { ascending: false });
+
+    if (error || !recs || !recs.length) {
+      area.innerHTML = `<div class="empty-state"><div class="empty-glyph">✦</div><p class="empty-text">The directory is empty — share the survey to start collecting recs.</p></div>`;
+      return;
+    }
+
+    const prompt = `You are a helpful assistant for a peer beauty provider directory called "The Rec".
+
+A user searched: "${query}"
+
+Here are all the recommendations in the directory:
+${JSON.stringify(recs)}
+
+Your job:
+1. Write a short, warm 1-2 sentence synthesis answering the user's query — mention specific provider or salon names where relevant. Be direct. If location is mentioned in a note or salon name, use it. If nothing matches well, say so honestly.
+2. Return the IDs of the most relevant recommendations, ordered by relevance. Max 5.
+
+Respond ONLY with valid JSON in this exact format, no other text:
+{"answer":"...","ids":["uuid1","uuid2"]}`;
+
+    try {
+      const res = await fetch('/.netlify/functions/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      const data = await res.json();
+      const text = data.content.find(b => b.type === 'text')?.text || '';
+      const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+      let html = '';
+      if (parsed.answer) {
+        html += `<div class="ai-answer"><p class="ai-answer-text">${parsed.answer}</p></div>`;
+      }
+
+      const matched = (parsed.ids || []).map(id => recs.find(r => r.id === id)).filter(Boolean);
+      if (matched.length) {
+        html += `<p class="results-label">${matched.length} recommendation${matched.length !== 1 ? 's' : ''}</p>`;
+        html += matched.map(r => `
+          <div class="result-card">
+            <div class="result-service">${r.service || ''}</div>
+            <div class="result-provider">${[r.provider, r.salon].filter(Boolean).join(' · ')}</div>
+            ${r.ig ? `<div class="result-ig">${r.ig.startsWith('@') ? r.ig : '@'+r.ig}</div>` : ''}
+            ${r.note ? `<div class="result-note">"${r.note}"${r.recommender ? ' — '+r.recommender : ''}</div>` : ''}
+          </div>`).join('');
+      } else {
+        html += `<div class="empty-state"><div class="empty-glyph">✦</div><p class="empty-text">No matching recommendations found.</p></div>`;
+      }
+      area.innerHTML = html;
+    } catch(err) {
+      area.innerHTML = `<div class="status-msg">Something went wrong — please try again.</div>`;
+    }
+  }
+</script>
+</body>
+</html>
